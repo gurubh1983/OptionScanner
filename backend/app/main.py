@@ -28,7 +28,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
-from app.db.session import engine
+from app.db.session import async_engine as engine
 from app.db.base import Base
 
 @app.on_event("startup")

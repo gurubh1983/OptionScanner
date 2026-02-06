@@ -9,11 +9,29 @@ from app.core.config import settings
 
 async_engine = create_async_engine(
     settings.database_url,
+
     echo=settings.debug,
+
     pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
+    pool_recycle=300,
+
+    pool_size=5,
+    max_overflow=5,
+
+    connect_args={
+        "server_settings": {
+            "application_name": "strikegenius"
+        }
+    },
 )
+
+async def warmup_db():
+    try:
+        async with async_engine.connect() as conn:
+            await conn.execute("SELECT 1")
+        print("✅ DB warmed up")
+    except Exception as e:
+        print("❌ DB warmup failed:", e)
 
 async_session_maker = async_sessionmaker(
     async_engine,
@@ -29,8 +47,8 @@ class Base(DeclarativeBase):
     pass
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
+async def get_db():
+    async with async_session() as session:
         try:
             yield session
             await session.commit()
@@ -39,6 +57,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             raise
         finally:
             await session.close()
+
 
 
 async def init_db() -> None:

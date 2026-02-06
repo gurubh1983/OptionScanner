@@ -20,4 +20,6 @@ COPY . .
 RUN find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENV PORT=8000
+# Railway sets PORT at runtime; default 8000 if unset
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

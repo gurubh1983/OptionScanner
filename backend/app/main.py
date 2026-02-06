@@ -28,6 +28,13 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+from app.db.session import engine
+from app.db.base import Base
+
+@app.on_event("startup")
+async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 def _cors_origins() -> list[str]:
     if settings.cors_origins:

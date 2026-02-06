@@ -21,4 +21,6 @@ razorpay>=1.4.0
 stripe>=7.0.0
 
 # TA (use TA-Lib binary or pandas-ta only if TA-Lib not available)
-pandas-ta==0.3.14b0
+# pandas-ta disabled (not available on Railway)
+# pandas-ta==0.3.14b0
+

@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #fafafa;
+  --bg-card: #ffffff;
+  --border: #e4e4e7;
+  --primary: #4f46e5;
+  --primary-soft: #eef2ff;
+}
+
+body {
+  background: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Apple-style spacing, touch-friendly */
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

@@ -1,0 +1,51 @@
+"""
+StrikeGenius.ai - FastAPI application entry point.
+Chartink + TradingView + Option Chain + AI = One Platform.
+"""
+
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.api.v1.router import api_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Startup: connect DB, Redis. Shutdown: cleanup."""
+    yield
+
+
+app = FastAPI(
+    title=settings.app_name,
+    description="Options Strike Scanner for Indian Markets — Unlimited rules, Chartink-level power, TradingView indicators.",
+    version="0.1.0",
+    openapi_url=settings.openapi_url,
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
+
+def _cors_origins() -> list[str]:
+    if settings.cors_origins:
+        return [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    return ["*"] if settings.debug else ["https://strikegenius.ai"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins(),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(api_router, prefix=settings.api_v1_prefix)
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    """Health check for load balancers and K8s."""
+    return {"status": "ok", "app": settings.app_name}

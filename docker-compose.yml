@@ -1,0 +1,61 @@
+# StrikeGenius.ai — local dev stack
+# Run: docker compose up -d
+# Backend: http://localhost:8000  Frontend: http://localhost:3000
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://strikegenius:strikegenius@db:5432/strikegenius
+      - DATABASE_URL_SYNC=postgresql://strikegenius:strikegenius@db:5432/strikegenius
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-change-in-prod
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: strikegenius
+      POSTGRES_PASSWORD: strikegenius
+      POSTGRES_DB: strikegenius
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U strikegenius"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:

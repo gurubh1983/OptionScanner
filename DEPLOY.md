@@ -19,7 +19,8 @@
 
 ## Railway
 
-- **Backend only:** Set Railway project root to `backend`. The `backend/Procfile` runs:
+- **Set Root Directory to `backend`** in the service settings so Railpack/Nixpacks builds only the Python app (avoids monorepo detection issues).
+- **Backend only:** With root = `backend`, the `Procfile` runs:
 
   ```text
   web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
@@ -32,6 +33,7 @@
   ```
 
 - In Railway dashboard, add env vars from `.env.production.example` (no need to commit `.env`).
+- **If you see "Error creating build plan with Railpack"**: ensure Root Directory is `backend`; `ta-lib` and `pandas-ta` are not in use (removed from `pyproject.toml` for Railway compatibility). The app uses `requirements.txt` and `nixpacks.toml` for a clear build plan.
 
 ## CORS
 

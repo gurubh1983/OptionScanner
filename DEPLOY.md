@@ -33,7 +33,11 @@
   ```
 
 - In Railway dashboard, add env vars from `.env.production.example` (no need to commit `.env`).
-- **If you see "Error creating build plan with Railpack"**: ensure Root Directory is `backend`; `ta-lib` and `pandas-ta` are not in use (removed from `pyproject.toml` for Railway compatibility). The app uses `requirements.txt` and `nixpacks.toml` for a clear build plan.
+- **If you see "Error creating build plan with Railpack"**: switch the service to use the **Dockerfile** builder so Railpack is skipped:
+  1. In the service → **Settings** → **Build** (or **Deploy**), set **Builder** to **Dockerfile**.
+  2. Set **Dockerfile path** to `Dockerfile` (or `backend/Dockerfile` if root is repo root).
+  3. Set **Root Directory** to `backend` so the Dockerfile and `requirements.txt` are found.
+  The repo’s `backend/Dockerfile` uses `requirements.txt` only (no ta-lib/pandas-ta) and listens on `$PORT`.
 
 ## CORS
 
@@ -54,3 +58,19 @@ git push -u origin main
 ```
 
 Use your actual branch name if not `main`.
+
+---
+
+## "Application failed to respond" on Railway
+
+1. **Deploy logs**  
+   In Railway → your service → **Deployments** → latest deployment → **View logs**. Check for Python tracebacks or "Address already in use" / port errors.
+
+2. **Env vars**  
+   Ensure **DATABASE_URL** (and optionally **DATABASE_URL_SYNC**) are set. If the DB is unreachable, the app can crash on first request that uses the DB.
+
+3. **Root URL**  
+   The app serves `GET /` and `GET /health` with no DB. If those work in logs but the browser fails, the issue may be CORS or the URL you’re opening (try `https://your-app.up.railway.app/` and `https://your-app.up.railway.app/health`).
+
+4. **Custom domain**  
+   If you added a domain, ensure the service is running and the deployment succeeded (green).

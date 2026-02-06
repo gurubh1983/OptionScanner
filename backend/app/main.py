@@ -45,6 +45,12 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 
+@app.get("/")
+def root() -> dict[str, str]:
+    """Root redirect for Railway/proxy health checks and visitors."""
+    return {"status": "ok", "app": settings.app_name, "docs": "/docs", "health": "/health"}
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     """Health check for load balancers and K8s."""

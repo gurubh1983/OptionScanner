@@ -132,3 +132,9 @@ async def get_current_user_optional(
         return None
     repo = UserRepository(session)
     return await repo.get_by_id(uid)
+# Indicator engine dependency
+from app.indicators.engine import IndicatorEngine
+
+
+def get_indicator_engine() -> IndicatorEngine:
+    return IndicatorEngine()

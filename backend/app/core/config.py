@@ -35,13 +35,21 @@ class Settings(BaseSettings):
         description="Comma-separated allowed origins; empty = allow_origins from debug flag",
     )
 
-    # Database
+    # Database (use postgresql+asyncpg for async; plain postgresql:// is auto-converted)
     database_url: str = Field(
         default="postgresql+asyncpg://strikegenius:strikegenius@localhost:5432/strikegenius"
     )
     database_url_sync: str = Field(
         default="postgresql://strikegenius:strikegenius@localhost:5432/strikegenius"
     )
+
+    @model_validator(mode="after")
+    def ensure_async_driver(self) -> "Settings":
+        """If DATABASE_URL is plain postgresql:// (e.g. from Neon/Railway), use asyncpg for the async engine."""
+        url = self.database_url
+        if url.startswith("postgresql://") and "postgresql+asyncpg" not in url:
+            object.__setattr__(self, "database_url", url.replace("postgresql://", "postgresql+asyncpg://", 1))
+        return self
 
     # Redis
     redis_url: str = Field(default="redis://localhost:6379/0")

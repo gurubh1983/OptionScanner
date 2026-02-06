@@ -1,0 +1,12 @@
+# DISABLED: Template marketplace. Restore to endpoints/ and wire deps + router to re-enable.
+# Original content preserved below (rename to templates_market.py and move to parent dir).
+"""
+import uuid
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from app.api.v1.deps import get_marketplace_service, get_current_user_id, get_current_user_id_optional
+from app.services.marketplace_service import MarketplaceService
+from typing import Annotated
+router = APIRouter()
+# ... routes list_marketplace, my_purchases, creator_earnings, get_template_detail, purchase_template, rate_template
+"""

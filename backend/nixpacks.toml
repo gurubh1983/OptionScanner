@@ -1,0 +1,9 @@
+# Railway/Nixpacks: use requirements.txt and explicit Python so Railpack builds reliably
+[phases.setup]
+nixPkgs = ["python311"]
+
+[phases.install]
+cmds = ["pip install --no-cache-dir -r requirements.txt"]
+
+[start]
+cmd = "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"

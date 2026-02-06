@@ -9,8 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import decode_access_token
 from app.db.session import get_db
 
-# Repositories (existing only)
+# Repositories (core: user, plan, subscription, scan)
 from app.repositories.user_repository import UserRepository
+from app.repositories.plan_repository import PlanRepository
 from app.repositories.subscription_repository import SubscriptionRepository
 from app.repositories.scan_repository import ScanRepository
 
@@ -38,6 +39,12 @@ def get_user_repo(
     return UserRepository(session)
 
 
+def get_plan_repo(
+    session: Annotated[AsyncSession, Depends(get_db)],
+) -> PlanRepository:
+    return PlanRepository(session)
+
+
 def get_subscription_repo(
     session: Annotated[AsyncSession, Depends(get_db)],
 ) -> SubscriptionRepository:
@@ -61,9 +68,10 @@ def get_auth_service(
 
 
 def get_subscription_service(
+    plan_repo: Annotated[PlanRepository, Depends(get_plan_repo)],
     sub_repo: Annotated[SubscriptionRepository, Depends(get_subscription_repo)],
 ) -> SubscriptionService:
-    return SubscriptionService(sub_repo)
+    return SubscriptionService(plan_repo, sub_repo)
 
 
 def get_market_data_service() -> MarketDataService:

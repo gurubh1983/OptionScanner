@@ -1,4 +1,4 @@
-"""Aggregate all v1 API routes. Marketplace/templates excluded until re-enabled."""
+"""Aggregate v1 API routes. Only working endpoints; marketplace is disabled (see endpoints/_disabled)."""
 
 from fastapi import APIRouter
 
@@ -12,5 +12,3 @@ api_router.include_router(indicators.router, prefix="/indicators", tags=["indica
 api_router.include_router(billing.router, prefix="/billing", tags=["billing"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(backtest.router, prefix="/backtest", tags=["backtest"])
-
-# Disabled: templates_market (template marketplace). Re-enable when feature is ready.

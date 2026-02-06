@@ -1,16 +1,18 @@
-from sqlalchemy.orm import DeclarativeBase
+"""
+Single DeclarativeBase for the app. Re-export from session.
+Import only models that exist and are required for create_all (Scan has FK to scan_rules).
+"""
+from app.db.session import Base
 
+# Register all existing ORM models with Base.metadata so create_all creates every table.
+from app.models import (  # noqa: F401
+    User,
+    Plan,
+    Subscription,
+    Scan,
+    ScanRule,
+    TemplatePurchase,
+    TemplateRating,
+)
 
-# Central Base class for all models
-class Base(DeclarativeBase):
-    pass
-
-
-# Import all models so metadata is registered
-from app.models.user import User
-from app.models.plan import Plan
-from app.models.subscription import Subscription
-from app.models.scan import Scan
-from app.models.scan_rule import ScanRule
-from app.models.template_purchase import TemplatePurchase
-from app.models.template_rating import TemplateRating
+__all__ = ["Base"]

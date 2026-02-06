@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # StrikeGenius.ai
 
 **Chartink + TradingView + Option Chain + AI = One Platform**
@@ -89,13 +88,11 @@ docker compose up -d
 # Backend: http://localhost:8000  Frontend: http://localhost:3000
 ```
 
-### Database migrations
+### Database initialization
 
-```bash
-cd backend
-# Set DATABASE_URL_SYNC in .env
-alembic upgrade head
-```
+- **On startup** the app runs `Base.metadata.create_all()` so all tables (users, plans, subscriptions, scans, scan_rules, template_purchases, template_ratings) are created if missing. No Alembic run is required for a minimal boot.
+- **Plans (billing):** If the `plans` table is empty, `GET /api/v1/billing/plans` returns `[]` and subscription limits fall back to config (`free_scans_per_day`, etc.). To seed Free/Pro/Elite plans, run Alembic: `alembic upgrade head` (migration 001 seeds plans).
+- **Disabled features (stubbed):** Template list/save (`GET/POST /api/v1/scans/templates`) return empty list and 503. Template marketplace (`/api/v1/templates/market`) is not mounted. Re-enable by wiring `ScanRuleRepository` in deps and including `templates_market` in `app.api.v1.router`.
 
 ## Scanner engine (core)
 
@@ -149,5 +146,4 @@ alembic upgrade head
 ## License
 
 Proprietary — StrikeGenius.ai
-=======
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # StrikeGenius.ai
 
 **Chartink + TradingView + Option Chain + AI = One Platform**
@@ -148,3 +149,5 @@ alembic upgrade head
 ## License
 
 Proprietary — StrikeGenius.ai
+=======
+
